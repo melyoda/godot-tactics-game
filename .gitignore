@@ -1,0 +1,22 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Imported assets
+.import/
+
+# Exported builds
+export.cfg
+export_presets.cfg
+
+# Mono / C# (if you ever use it)
+.mono/
+data_*/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/

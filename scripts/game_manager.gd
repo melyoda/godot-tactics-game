@@ -113,6 +113,9 @@ func _check_enemy_queue():
 		start_player_turn()
 
 func start_player_turn():
+	if turn_state == TurnState.PLAYER_TURN:
+		return
+		
 	turn_state = TurnState.PLAYER_TURN
 	print("▶ Player Turn")
 	

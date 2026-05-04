@@ -5,6 +5,7 @@ class_name BaseUnit
 var current_ap: int = 0
 var is_my_turn: bool = false
 var is_moving: bool = false
+var has_notified_brain: bool = false
 
 # The Brain is the single source of truth
 @onready var brain = GameManager 
@@ -12,6 +13,7 @@ var is_moving: bool = false
 func start_turn():
 	current_ap = max_ap
 	is_my_turn = true
+	has_notified_brain = false # Reset the gate!
 	print(name, " turn started. AP: ", current_ap)
 
 func move_to_grid_tile(target_grid_pos: Vector2i):
@@ -43,7 +45,8 @@ func on_move_finished():
 
 ## The Iron Rule: Tell the Brain when we are spent
 func check_ap_and_finish():
-	if current_ap <= 0:
+	if current_ap <= 0 and not has_notified_brain:
+		has_notified_brain = true # Close the gate!
 		is_my_turn = false
-		print(name, " is out of AP. Notifying Brain.")
+		print("DEBUG: ", name, " is out of AP. Notifying Brain.")
 		brain.notify_unit_finished(self)

@@ -7,6 +7,7 @@ enum TurnState {
 }
 
 var turn_state: TurnState = TurnState.PROCESSING # Start in processing
+var astar_grid = AStarGrid2D.new()
 var enemies = []
 var unit_positions = {} 
 var enemies_finished_this_turn: int = 0
@@ -39,8 +40,23 @@ func check_game_ready():
 
 	if player != null and ui_layer != null:
 		game_started = true
+		setup_astar()
 		print("👑 Iron Throne: Systems Online. Starting Game.")
+		print("👑 A* Grid Initialized. Region: ", astar_grid.region)
 		start_player_turn()
+
+func setup_astar():
+	astar_grid.region = floor_layer.get_used_rect()
+	astar_grid.cell_size = Vector2(1, 1) # We use grid coordinates, not pixels
+	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER # Keep it 4-directional
+	astar_grid.update()
+	
+	# Loop through the grid and mark obstacles
+	for x in range(astar_grid.region.size.x):
+		for y in range(astar_grid.region.size.y):
+			var pos = Vector2i(x + astar_grid.region.position.x, y + astar_grid.region.position.y)
+			if not is_tile_walkable(pos):
+				astar_grid.set_point_solid(pos, true)
 
 # --- The Flow Control (The Iron Rule) ---
 
@@ -60,12 +76,7 @@ func notify_unit_finished(unit):
 		# Small delay between enemies so the camera/player can breathe
 		await get_tree().create_timer(0.3).timeout
 		_process_next_enemy()
-	#elif turn_state == TurnState.ENEMY_TURN:
-		#if not enemies.has(unit):
-			#return  # Ignore weird calls (like player accidentally calling)
-		#
-		#enemies_finished_this_turn += 1
-		#_check_enemy_queue()
+
 
 func _transition_to_enemy_turn():
 	print("Brain: Player finished. Moving to ENEMY_TURN.")
@@ -129,6 +140,37 @@ func start_player_turn():
 	if ui_layer:
 		ui_layer.refresh_ui()
 
+func get_next_path_step(from_pos: Vector2i, to_pos: Vector2i) -> Vector2i:
+	update_astar_obstacles() 
+	
+	# Ensure the start and end points are within the A* region
+	if not astar_grid.region.has_point(from_pos) or not astar_grid.region.has_point(to_pos):
+		print("DEBUG: Pathfinding out of bounds! From:", from_pos, " To:", to_pos)
+		return from_pos
+	
+	# SURGERY: Force the player tile to be walkable for this specific calculation
+	astar_grid.set_point_solid(to_pos, false)
+	
+	#var path = astar_grid.get_id_path(from_pos, to_pos)
+	var path = astar_grid.get_point_path(from_pos, to_pos)
+	
+	if path.size() > 1:
+		return path[1] 
+	
+	print("DEBUG: A* failed to find path from ", from_pos, " to ", to_pos)
+	print("From:", from_pos, " To:", to_pos)
+	print("Path:", path)
+	return from_pos
+
+func update_astar_obstacles():
+	var region = astar_grid.region
+	# We loop through the actual coordinates used by the TileMap
+	for x in range(region.position.x, region.end.x):
+		for y in range(region.position.y, region.end.y):
+			var pos = Vector2i(x, y)
+			# Standardize: check if it's walkable, then tell AStar
+			astar_grid.set_point_solid(pos, not is_tile_walkable(pos))
+
 # --- Grid & Logic (Path Decoupling Source) ---
 
 func register_unit(unit, grid_pos: Vector2i):
@@ -140,7 +182,8 @@ func update_unit_position(old_pos: Vector2i, new_pos: Vector2i, unit):
 	unit_positions[new_pos] = unit
 
 func is_cell_occupied(grid_pos: Vector2i) -> bool:
-	return unit_positions.has(grid_pos)
+	#return unit_positions.has(grid_pos)
+	return false
 
 func is_tile_walkable(grid_coords: Vector2i) -> bool:
 	# 1. Check Floor

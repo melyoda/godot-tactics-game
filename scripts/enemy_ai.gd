@@ -19,43 +19,29 @@ func take_turn():
 	var my_pos = brain.floor_layer.local_to_map(global_position)
 	var player_pos = brain.floor_layer.local_to_map(player.global_position)
 	
-	# NEW: Calculate distance to player before deciding to move
+	# 1. Check distance
 	var dist_to_player = abs(player_pos.x - my_pos.x) + abs(player_pos.y - my_pos.y)
 	
-	# If distance is 1, we are already adjacent. Stop here.
 	if dist_to_player <= 1:
 		print(name, ": Already adjacent to player. Preparing to attack.")
-		# Trigger Attack Animation here later
+		# Combat logic will go here
 		finish_action()
 		return
+
+	# 2. Get the A* step
+	var target = brain.get_next_path_step(my_pos, player_pos)
 	
-	var target = my_pos
-	
-	# 1. Calculate the step toward the player
-	if player_pos.x > my_pos.x:
-		target.x += 1
-	elif player_pos.x < my_pos.x:
-		target.x -= 1
-	elif player_pos.y > my_pos.y:
-		target.y += 1
-	elif player_pos.y < my_pos.y:
-		target.y -= 1
-		
-	# 3. Final Surgical Gate (Walkable? Occupied?)
-	# This single check handles walls, other enemies, and the player space.
-	if brain.is_tile_walkable(target):
+	# 3. Movement Logic
+	if target == player_pos:
+		print(name, ": Next step is player tile. Staying put to attack.")
+		finish_action()
+		return # Stop here!
+
+	if target != my_pos and brain.is_tile_walkable(target):
 		move_to_grid_tile(target)
 	else:
-		#print(name, ": Path blocked or target occupied. Waiting.")
-		print(name, ": Path blocked by obstacle. Ending turn.")
+		print(name, ": No valid path step found.")
 		finish_action()
-		
-	## 2. SURGICAL CHECK: Is the player (or anyone else) on my target tile?
-	if target == player_pos:
-		print(name, ": Player is in my way! Staying put to attack/wait.")
-		# Here you would trigger an attack animation
-		finish_action() 
-		return
 
 func on_move_finished():
 	# If we have more AP, we could call take_turn() again for multi-step AI

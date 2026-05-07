@@ -1,15 +1,63 @@
 extends CharacterBody2D
 class_name BaseUnit
 
+# Combate and Vitality varaibles 
+signal hp_changed(new_hp, max_hp)
+
+@export var attack_damage: int = 2
+@export var attack_range: int = 1
+
+@export var max_hp: int = 10
+var current_hp: int
+
+# Movment and Turns 
 @export var max_ap: int = 3
 var current_ap: int = 0
+
 var is_my_turn: bool = false
 var is_moving: bool = false
+
+# Notifications 
 var has_notified_brain: bool = false
 
 # The Brain is the single source of truth
 @onready var brain = GameManager 
 
+func _ready():
+	current_hp = max_hp
+	# Make sure units are in proper groups for the click detection
+	if self is Enemy: 
+		add_to_group("enemies")
+
+# Combate and Vitality 
+func take_damage(amount: int):
+	var old_hp = current_hp
+	# Using clamp ensures we stay between 0 and max_hp
+	current_hp = clampi(current_hp - amount, 0, max_hp)
+	
+	print(name, " took ", amount, " damage. HP: ", current_hp)
+	
+	print("-----------------------------------------")
+	print("💥 [COMBAT LOG] ", name, " was HIT!")
+	print("   Damage Received: ", amount)
+	print("   HP Change: ", old_hp, " -> ", current_hp, " (Max: ", max_hp, ")")
+	print("-----------------------------------------")
+	
+	hp_changed.emit(current_hp, max_hp)
+	if current_hp <= 0:
+		die()
+
+func die():
+	print(name, " was destroyed.")
+	
+	# Tell the brain to clean up its references
+	if brain and brain.has_method("remove_unit"):
+		brain.remove_unit(self)
+	
+	# Remove the node from the scene tree
+	queue_free()
+	
+# Turns and Movement 
 func start_turn():
 	current_ap = max_ap
 	is_my_turn = true

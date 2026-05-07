@@ -50,15 +50,22 @@ script = ExtResource("4_272bh")
 
 [node name="Enemy" parent="MapNodes" unique_id=1786554077 instance=ExtResource("6_272bh")]
 position = Vector2(-350, 2)
+max_hp = 5
+max_ap = 2
 
 [node name="Enemy2" parent="MapNodes" unique_id=1713631905 instance=ExtResource("6_272bh")]
 position = Vector2(-230, 124)
+max_hp = 5
+max_ap = 2
 
 [node name="Enemy3" parent="MapNodes" unique_id=1567320245 instance=ExtResource("6_272bh")]
 position = Vector2(-220, -83)
+max_hp = 5
+max_ap = 2
 
 [node name="Enemy4" parent="MapNodes" unique_id=70914394 instance=ExtResource("6_272bh")]
 position = Vector2(-2, -196)
+max_hp = 5
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1255106681]
 script = ExtResource("5_lquwl")

@@ -49,19 +49,6 @@ func check_game_ready():
 		#print("👑 A* Grid Initialized. Region: ", astar_grid.region)
 		start_player_turn()
 
-#func setup_astar():
-	#astar_grid.region = floor_layer.get_used_rect()
-	#astar_grid.cell_size = Vector2(1, 1) # We use grid coordinates, not pixels
-	#astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER # Keep it 4-directional
-	#astar_grid.update()
-	#
-	## Loop through the grid and mark obstacles
-	#for x in range(astar_grid.region.size.x):
-		#for y in range(astar_grid.region.size.y):
-			#var pos = Vector2i(x + astar_grid.region.position.x, y + astar_grid.region.position.y)
-			#if not is_tile_walkable(pos):
-				#astar_grid.set_point_solid(pos, true)
-
 # --- The Flow Control (The Iron Rule) ---
 
 ## Called by any unit when they have zero AP or finish their move
@@ -94,9 +81,6 @@ func _transition_to_enemy_turn():
 		return
 	
 	_process_next_enemy()	
-	# Start all enemies (or trigger them sequentially later)
-	#for enemy in enemies:
-		#enemy.start_turn()
 
 func _process_next_enemy():
 	# Check if we've reached the end of the list
@@ -114,12 +98,6 @@ func _process_next_enemy():
 	else:
 		# No more enemies left
 		_check_enemy_queue()
-				
-		#print("Brain: Commanding ", current_enemy.name)
-		#current_enemy.start_turn()
-	#else:
-		## Safety check: if index exceeds list, we must be done
-		#_check_enemy_queue()
 
 		
 func _check_enemy_queue():
@@ -128,6 +106,10 @@ func _check_enemy_queue():
 		start_player_turn()
 
 func start_player_turn():
+	if not is_instance_valid(player):
+		print("💀 GAME OVER: The Player has fallen.")
+		return
+		
 	if turn_state == TurnState.PLAYER_TURN:
 		return
 		
@@ -150,27 +132,7 @@ func get_next_path_step(from_pos: Vector2i, to_pos: Vector2i) -> Vector2i:
 		return pathfinder.get_next_step(from_pos, to_pos)
 	return from_pos # Fallback if pathfinder isn't ready
 	
-#func get_next_path_step(from_pos: Vector2i, to_pos: Vector2i) -> Vector2i:
-	#update_astar_obstacles() 
-	#
-	## Ensure the start and end points are within the A* region
-	#if not astar_grid.region.has_point(from_pos) or not astar_grid.region.has_point(to_pos):
-		#print("DEBUG: Pathfinding out of bounds! From:", from_pos, " To:", to_pos)
-		#return from_pos
-	#
-	## SURGERY: Force the player tile to be walkable for this specific calculation
-	#astar_grid.set_point_solid(to_pos, false)
-	#
-	##var path = astar_grid.get_id_path(from_pos, to_pos)
-	#var path = astar_grid.get_point_path(from_pos, to_pos)
-	#
-	#if path.size() > 1:
-		#return path[1] 
-	#
-	#print("DEBUG: A* failed to find path from ", from_pos, " to ", to_pos)
-	#print("From:", from_pos, " To:", to_pos)
-	#print("Path:", path)
-	#return from_pos
+
 
 # --- Grid & Logic (Path Decoupling Source) ---
 
@@ -182,7 +144,7 @@ func update_unit_position(old_pos: Vector2i, new_pos: Vector2i, unit):
 		unit_positions.erase(old_pos)
 	unit_positions[new_pos] = unit
 
-func is_cell_occupied(grid_pos: Vector2i) -> bool:
+func is_cell_occupied(_grid_pos: Vector2i) -> bool:
 	#return unit_positions.has(grid_pos)
 	return false
 
@@ -191,19 +153,24 @@ func is_tile_walkable(grid_coords: Vector2i) -> bool:
 	if pathfinder:
 		return pathfinder.is_tile_walkable(grid_coords)
 	return false
-	
-#func is_tile_walkable(grid_coords: Vector2i) -> bool:
-	## 1. Check Floor
-	#var floor_data = floor_layer.get_cell_tile_data(grid_coords)
-	#if floor_data == null: return false 
+
+#func remove_unit(unit):
+	#if enemies.has(unit):
+		#enemies.erase(unit)
+		#print("Brain: Enemy removed from registry.")
 	#
-	## 2. Check Static Obstacles
-	#var obstacle_data = obstacle_layer.get_cell_tile_data(grid_coords)
-	#if obstacle_data and obstacle_data.get_collision_polygons_count(0) > 0:
-		#return false
-		#
-	## 3. Check for dynamic obstacles (Other Units)
-	#if is_cell_occupied(grid_coords):
-		#return false
-			#
-	#return true
+	#if player == unit:
+		#player = null
+		#print("Brain: Player has died. Game Over?")
+func remove_unit(unit):
+	if enemies.has(unit):
+		# Find the index of the enemy being removed
+		var idx = enemies.find(unit)
+		enemies.erase(unit)
+		
+		# If the dead enemy was BEFORE or IS the one currently moving,
+		# we might need to shift our index back so we don't skip the next guy.
+		if idx <= enemy_index and enemy_index > 0:
+			enemy_index -= 1
+			
+		print("Brain: Enemy removed. Remaining: ", enemies.size())

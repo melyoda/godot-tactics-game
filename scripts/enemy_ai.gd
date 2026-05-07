@@ -62,6 +62,10 @@ func take_turn():
 func on_move_finished():
 	# If we have more AP, we could call take_turn() again for multi-step AI
 	# For now, we finish after one step
+	if not check_ap_and_finish():
+		take_turn()
+	else:
+		finish_action()
 	finish_action()
 
 ## Helper to ensure we follow the Iron Rule

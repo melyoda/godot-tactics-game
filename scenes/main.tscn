@@ -40,6 +40,7 @@ tile_set = SubResource("TileSet_h2yge")
 
 [node name="GridBase" type="TileMapLayer" parent="MapNodes" unique_id=577679850]
 y_sort_enabled = true
+tile_map_data = PackedByteArray("AAD7/wMAAAAEAAAAAAD7/wEAAAAEAAAAAAD7/wIAAAAEAAAAAAD8/wMAAAAEAAAAAAD9/wMAAAAEAAAAAAD+/wMAAAAEAAAAAAD//wMAAAAEAAAAAAAAAAMAAAAEAAAAAAABAAMAAAAEAAAAAAACAAMAAAAEAAAAAAADAAMAAAAEAAAAAAAEAAMAAAAEAAAAAAA=")
 tile_set = ExtResource("1_h2yge")
 
 [node name="player" parent="MapNodes" unique_id=969773176 instance=ExtResource("3_7mycd")]

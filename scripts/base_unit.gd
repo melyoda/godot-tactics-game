@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name BaseUnit
 
-@export var max_ap: int = 2
+@export var max_ap: int = 3
 var current_ap: int = 0
 var is_my_turn: bool = false
 var is_moving: bool = false

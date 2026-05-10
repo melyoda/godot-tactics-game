@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dlvkdlhvfitkm"]
+
+[ext_resource type="Script" uid="uid://c44y8acqgj11y" path="res://scripts/base_unit.gd" id="1_svj48"]
+[ext_resource type="Script" uid="uid://bsqqaa6vokdrk" path="res://scripts/health_bar.gd" id="2_hx8he"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_svj48"]
+size = Vector2(40, 54)
+
+[node name="Baseunit" type="CharacterBody2D" unique_id=182379774]
+script = ExtResource("1_svj48")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=513411866]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1591563045]
+position = Vector2(-3, -27)
+shape = SubResource("RectangleShape2D_svj48")
+
+[node name="HealthBar" type="TextureProgressBar" parent="." unique_id=2019425334]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("2_hx8he")

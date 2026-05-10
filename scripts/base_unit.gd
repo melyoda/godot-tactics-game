@@ -24,6 +24,8 @@ var has_notified_brain: bool = false
 @onready var brain = GameManager 
 
 func _ready():
+	var _grid_pos = brain.floor_layer.local_to_map(brain.floor_layer.to_local(global_position))
+	brain.register_unit(self)
 	current_hp = max_hp
 	# Make sure units are in proper groups for the click detection
 	if self is Enemy: 
@@ -63,14 +65,15 @@ func start_turn():
 	is_my_turn = true
 	has_notified_brain = false # Reset the gate!
 	print(name, " turn started. AP: ", current_ap)
+	
 
 func move_to_grid_tile(target_grid_pos: Vector2i):
 	if current_ap <= 0:
 		return
-		
+	
 	is_moving = true
 	current_ap -= 1
-	
+	print(name, " moving to ", target_grid_pos)
 	# Ask Brain for coordinate conversions instead of holding TileMap references here
 	var old_grid_pos = brain.floor_layer.local_to_map(global_position)
 	var target_world_pos = brain.floor_layer.map_to_local(target_grid_pos)

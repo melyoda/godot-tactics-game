@@ -3,10 +3,9 @@
 [ext_resource type="Script" uid="uid://d64ftvkxhq8f" path="res://scripts/game_manager.gd" id="1_7mycd"]
 [ext_resource type="TileSet" uid="uid://dut5buloqlt6v" path="res://resources/tileset.tres" id="1_h2yge"]
 [ext_resource type="Texture2D" uid="uid://wsl2b8cb87cq" path="res://assets/highdone.png" id="2_1bvp3"]
-[ext_resource type="PackedScene" uid="uid://crh5oiudr56i4" path="res://scenes/player.tscn" id="3_7mycd"]
-[ext_resource type="Script" uid="uid://b3bku4hevaks5" path="res://scripts/player.gd" id="4_272bh"]
 [ext_resource type="Script" uid="uid://p001brdoej47" path="res://scripts/ui_manager.gd" id="5_lquwl"]
-[ext_resource type="PackedScene" uid="uid://tseaq544204x" path="res://scenes/enemy.tscn" id="6_272bh"]
+[ext_resource type="PackedScene" uid="uid://br7e5llo0l2cr" path="res://scenes/units/player.tscn" id="5_tefeu"]
+[ext_resource type="PackedScene" uid="uid://fo2dkh41pn6d" path="res://scenes/units/enemy.tscn" id="6_o6xl0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lquwl"]
 texture = ExtResource("2_1bvp3")
@@ -43,30 +42,6 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAD7/wMAAAAEAAAAAAD7/wEAAAAEAAAAAAD7/wIAAAAEAAAAAAD8/wMAAAAEAAAAAAD9/wMAAAAEAAAAAAD+/wMAAAAEAAAAAAD//wMAAAAEAAAAAAAAAAMAAAAEAAAAAAABAAMAAAAEAAAAAAACAAMAAAAEAAAAAAADAAMAAAAEAAAAAAAEAAMAAAAEAAAAAAA=")
 tile_set = ExtResource("1_h2yge")
 
-[node name="player" parent="MapNodes" unique_id=969773176 instance=ExtResource("3_7mycd")]
-script = ExtResource("4_272bh")
-
-[node name="Camera2D" type="Camera2D" parent="MapNodes/player" unique_id=1961863738]
-
-[node name="Enemy" parent="MapNodes" unique_id=1786554077 instance=ExtResource("6_272bh")]
-position = Vector2(-350, 2)
-max_hp = 5
-max_ap = 2
-
-[node name="Enemy2" parent="MapNodes" unique_id=1713631905 instance=ExtResource("6_272bh")]
-position = Vector2(-230, 124)
-max_hp = 5
-max_ap = 2
-
-[node name="Enemy3" parent="MapNodes" unique_id=1567320245 instance=ExtResource("6_272bh")]
-position = Vector2(-220, -83)
-max_hp = 5
-max_ap = 2
-
-[node name="Enemy4" parent="MapNodes" unique_id=70914394 instance=ExtResource("6_272bh")]
-position = Vector2(-2, -196)
-max_hp = 5
-
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1255106681]
 script = ExtResource("5_lquwl")
 
@@ -81,3 +56,9 @@ layout_mode = 1
 offset_right = 78.0
 offset_bottom = 31.0
 text = "End Turn"
+
+[node name="Player" parent="." unique_id=182379774 instance=ExtResource("5_tefeu")]
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1961863738]
+
+[node name="Enemy" parent="." unique_id=601131930 instance=ExtResource("6_o6xl0")]

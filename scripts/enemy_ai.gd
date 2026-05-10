@@ -11,45 +11,6 @@ func start_turn():
 	# Small delay or check can be added here if we do sequential moves later
 	take_turn()
 
-#func take_turn():
-	#var player = brain.player
-	#
-	#if player == null or current_ap <= 0:
-		#finish_action()
-		#return
-	#
-	#var my_pos = brain.floor_layer.local_to_map(global_position)
-	#var player_pos = brain.floor_layer.local_to_map(player.global_position)
-	#var dist = abs(player_pos.x - my_pos.x) + abs(player_pos.y - my_pos.y)
-	#
-	#if dist <= attack_range:
-		#attack(player)
-		#return
-		#
-	## Calculate distance to player before deciding to move
-	#var dist_to_player = abs(player_pos.x - my_pos.x) + abs(player_pos.y - my_pos.y)
-	#
-	## If distance is 1, we are already adjacent. Stop here.
-	#if dist_to_player <= 1:
-		#print(name, ": Already adjacent to player. Preparing to attack.")
-		## Trigger Attack Animation here later
-		#finish_action()
-		#return
-	## Ask the Brain for the A* verified next step
-	#var target = brain.get_next_path_step(my_pos, player_pos)
-	#
-	## If the target is the player's actual tile, we don't want to step ON them
-	#if target == player_pos:
-		#print(name, ": Next step is player tile. Staying put to attack.")
-		#finish_action()
-		#return
-#
-	#if target != my_pos and brain.is_tile_walkable(target):
-		#move_to_grid_tile(target)
-	#else:
-		#print(name, ": No valid path step found.")
-		#finish_action()
-
 func take_turn():
 	var player = brain.player
 	
@@ -82,7 +43,7 @@ func take_turn():
 		return
 
 	# 4. Move if the tile is valid
-	if target != my_pos and brain.is_tile_walkable(target):
+	if target != my_pos and brain.is_tile_walkable(target) and not brain.is_cell_occupied(target):
 		move_to_grid_tile(target)
 	else:
 		print(name, ": Path blocked or no path found.")

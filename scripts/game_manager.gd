@@ -10,7 +10,10 @@ var turn_state: TurnState = TurnState.PROCESSING # Start in processing
 #var astar_grid = AStarGrid2D.new()
 var pathfinder: Pathfinder = Pathfinder.new() # Initialize pathfinder.gd
 var enemies = []
-var unit_positions = {} 
+#var occupied_tiles = {} 
+# Key = Vector2i tile
+# Value = unit node
+var occupied_tiles: Dictionary = {}
 var enemies_finished_this_turn: int = 0
 var enemy_index: int = 0 # Track which enemy is currently moving
 
@@ -71,14 +74,14 @@ func notify_unit_finished(unit):
 
 func _transition_to_enemy_turn():
 	print("Brain: Player finished. Moving to ENEMY_TURN.")
-	print("👑 Iron Throne: Commencing sequential enemy operations.")
-	turn_state = TurnState.ENEMY_TURN
-	enemies_finished_this_turn = 0
-	enemy_index = 0 # Reset the pointer to the first enemy
 	
 	if enemies.size() == 0:
 		start_player_turn()
 		return
+	print("👑 Iron Throne: Commencing sequential enemy operations.")
+	turn_state = TurnState.ENEMY_TURN
+	enemies_finished_this_turn = 0
+	enemy_index = 0 # Reset the pointer to the first enemy
 	
 	_process_next_enemy()	
 
@@ -136,33 +139,59 @@ func get_next_path_step(from_pos: Vector2i, to_pos: Vector2i) -> Vector2i:
 
 # --- Grid & Logic (Path Decoupling Source) ---
 
-func register_unit(unit, grid_pos: Vector2i):
-	unit_positions[grid_pos] = unit
-
-func update_unit_position(old_pos: Vector2i, new_pos: Vector2i, unit):
-	if unit_positions.get(old_pos) == unit:
-		unit_positions.erase(old_pos)
-	unit_positions[new_pos] = unit
-
-func is_cell_occupied(_grid_pos: Vector2i) -> bool:
-	#return unit_positions.has(grid_pos)
-	return false
-
-# Pass-through helper so Unit scripts don't break
+#func register_unit(unit, grid_pos: Vector2i):
+	#occupied_tiles[grid_pos] = unit
+#
+#func update_unit_position(old_pos: Vector2i, new_pos: Vector2i, unit):
+	#if occupied_tiles.get(old_pos) == unit:
+		#occupied_tiles.erase(old_pos)
+	#occupied_tiles[new_pos] = unit
+#
+#func is_cell_occupied(_grid_pos: Vector2i) -> bool:
+	##return occupied_tiles.has(grid_pos)
+	#return false
+#
+## Pass-through helper so Unit scripts don't break
 func is_tile_walkable(grid_coords: Vector2i) -> bool:
 	if pathfinder:
 		return pathfinder.is_tile_walkable(grid_coords)
 	return false
 
-#func remove_unit(unit):
-	#if enemies.has(unit):
-		#enemies.erase(unit)
-		#print("Brain: Enemy removed from registry.")
-	#
-	#if player == unit:
-		#player = null
-		#print("Brain: Player has died. Game Over?")
+#func register_unit(unit, grid_pos: Vector2i):
+	#occupied_tiles[grid_pos] = unit
+
+func register_unit(unit):
+	var grid_pos = floor_layer.local_to_map(
+		floor_layer.to_local(unit.global_position)
+	)
+
+	occupied_tiles[grid_pos] = unit
+
+func update_unit_position(old_pos: Vector2i, new_pos: Vector2i, unit):
+	# Remove old tile
+	if occupied_tiles.get(old_pos) == unit:
+		occupied_tiles.erase(old_pos)
+
+	# Register new tile
+	occupied_tiles[new_pos] = unit
+
+func remove_unit_position(unit):
+	for pos in occupied_tiles.keys():
+		if occupied_tiles[pos] == unit:
+			occupied_tiles.erase(pos)
+			return
+
+func is_cell_occupied(grid_pos: Vector2i) -> bool:
+	return occupied_tiles.has(grid_pos)
+
+func get_unit_at_cell(grid_pos: Vector2i):
+	return occupied_tiles.get(grid_pos, null)
+#-------------------------------
+#unit removal 
+
 func remove_unit(unit):
+	remove_unit_position(unit)
+	
 	if enemies.has(unit):
 		# Find the index of the enemy being removed
 		var idx = enemies.find(unit)

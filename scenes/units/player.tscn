@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://br7e5llo0l2cr"]
+
+[ext_resource type="PackedScene" uid="uid://dlvkdlhvfitkm" path="res://scenes/units/baseunit.tscn" id="1_15tbu"]
+[ext_resource type="Script" uid="uid://b3bku4hevaks5" path="res://scripts/player.gd" id="2_55td2"]
+[ext_resource type="Texture2D" uid="uid://dhx3qh868p60w" path="res://assets/playerfornow.png" id="3_rwmet"]
+
+[node name="Player" unique_id=182379774 instance=ExtResource("1_15tbu")]
+script = ExtResource("2_55td2")
+
+[node name="Sprite2D" parent="." index="0" unique_id=513411866]
+position = Vector2(0, -34)
+texture = ExtResource("3_rwmet")
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=1591563045]
+position = Vector2(-4, -27)

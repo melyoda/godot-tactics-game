@@ -25,21 +25,6 @@ func _unhandled_input(event):
 		
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		handle_click()
-		
-	#if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		#var mouse_pos = get_global_mouse_position()
-		## Use Brain as the source for coordinate conversion
-		#var target_grid_pos = brain.floor_layer.local_to_map(brain.floor_layer.to_local(mouse_pos))
-		#var current_grid_pos = brain.floor_layer.local_to_map(brain.floor_layer.to_local(global_position))
-		#
-		#if current_ap <= 0:
-			#return
-			#
-		#var dist = get_grid_dist(current_grid_pos, target_grid_pos)
-		#
-		## Check movement validity through the Brain's eyes
-		#if dist <= move_range and brain.is_tile_walkable(target_grid_pos) and not is_path_blocked(current_grid_pos, target_grid_pos):
-			#move_to_grid_tile(target_grid_pos)
 
 	# Camera Dragging logic remains the same
 	handle_camera_drag(event)
@@ -86,9 +71,22 @@ func handle_click():
 			return # Exit so we don't try to move onto the enemy's tile
 			
 	# Movement Check
+	#var move_dist = get_grid_dist(current_grid_pos, target_grid_pos)
+	#if move_dist <= move_range and brain.is_tile_walkable(target_grid_pos) and not is_path_blocked(current_grid_pos, target_grid_pos):
+		#move_to_grid_tile(target_grid_pos) # Fixed name
+	# Movement Check
 	var move_dist = get_grid_dist(current_grid_pos, target_grid_pos)
-	if move_dist <= move_range and brain.is_tile_walkable(target_grid_pos) and not is_path_blocked(current_grid_pos, target_grid_pos):
-		move_to_grid_tile(target_grid_pos) # Fixed name
+	
+	# Cannot move onto occupied tiles
+	if brain.is_cell_occupied(target_grid_pos):
+		print("Tile occupied.")
+		return
+		
+	if move_dist <= move_range \
+	and brain.is_tile_walkable(target_grid_pos) \
+	and not is_path_blocked(current_grid_pos, target_grid_pos):
+		
+		move_to_grid_tile(target_grid_pos)
 
 func attack(target: BaseUnit):
 	print("Player attacking ", target.name)

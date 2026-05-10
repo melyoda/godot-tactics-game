@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://fo2dkh41pn6d"]
+
+[ext_resource type="PackedScene" uid="uid://dlvkdlhvfitkm" path="res://scenes/units/baseunit.tscn" id="1_ickjd"]
+[ext_resource type="Script" uid="uid://dbytukmn7vg5g" path="res://scripts/enemy_ai.gd" id="2_v0dqq"]
+[ext_resource type="Texture2D" uid="uid://wsl2b8cb87cq" path="res://assets/highdone.png" id="3_c06k3"]
+
+[node name="Enemy" unique_id=182379774 instance=ExtResource("1_ickjd")]
+script = ExtResource("2_v0dqq")
+
+[node name="Sprite2D" parent="." index="0" unique_id=513411866]
+position = Vector2(0, -29)
+texture = ExtResource("3_c06k3")
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=1591563045]
+position = Vector2(0, -27)

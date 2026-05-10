@@ -58,7 +58,21 @@ offset_bottom = 31.0
 text = "End Turn"
 
 [node name="Player" parent="." unique_id=182379774 instance=ExtResource("5_tefeu")]
+attack_range = 3
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1961863738]
 
 [node name="Enemy" parent="." unique_id=601131930 instance=ExtResource("6_o6xl0")]
+position = Vector2(-162, -121)
+
+[node name="Enemy2" parent="." unique_id=1197318818 instance=ExtResource("6_o6xl0")]
+position = Vector2(-344, -40)
+attack_damage = 5
+attack_range = 2
+max_hp = 3
+
+[node name="Enemy3" parent="." unique_id=1554606618 instance=ExtResource("6_o6xl0")]
+position = Vector2(23, -167)
+attack_damage = 1
+max_hp = 15
+max_ap = 1

@@ -12,7 +12,7 @@ script = ExtResource("1_svj48")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=513411866]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1591563045]
-position = Vector2(-3, -27)
+position = Vector2(0, -27)
 shape = SubResource("RectangleShape2D_svj48")
 
 [node name="HealthBar" type="TextureProgressBar" parent="." unique_id=2019425334]

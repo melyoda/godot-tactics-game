@@ -74,14 +74,14 @@ func notify_unit_finished(unit):
 
 func _transition_to_enemy_turn():
 	print("Brain: Player finished. Moving to ENEMY_TURN.")
-	
-	if enemies.size() == 0:
-		start_player_turn()
-		return
 	print("👑 Iron Throne: Commencing sequential enemy operations.")
 	turn_state = TurnState.ENEMY_TURN
 	enemies_finished_this_turn = 0
 	enemy_index = 0 # Reset the pointer to the first enemy
+	
+	if enemies.size() == 0:
+		start_player_turn()
+		return
 	
 	_process_next_enemy()	
 
